@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  nodeprisma:
+    image: postgres
+    environment:
+      POSTGRES_DB: go-hex
+      POSTGRES_PASSWORD: testpass123
+      POSTGRES_USER: postgres
+    ports:
+      - '3500:5432'
