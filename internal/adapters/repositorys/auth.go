@@ -46,6 +46,7 @@ func (a *DB) SignIn(username, password string) (*LoginResponse, error) {
 	}
 	// Implement the SignIn logic here
 	jwtSecret := os.Getenv("JWT_SECRET")
+
 	user, err := a.findUsername(username)
 	if err != nil {
 		return nil, err
@@ -96,8 +97,7 @@ func (a *DB) generateAccessToken(userId, jwtSecret string) (string, error) {
 		IssuedAt:  jwt.NewNumericDate(time.Now().UTC()),
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(1 * time.Hour).UTC()),
 	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodES256, payload)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
 	return token.SignedString([]byte(jwtSecret))
 }
 
@@ -109,6 +109,6 @@ func (a *DB) generateRefreshToken(userId, jwtSecret string) (string, error) {
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(7 * 24 * time.Hour).UTC()),
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodES256, payload)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
 	return token.SignedString([]byte(jwtSecret))
 }

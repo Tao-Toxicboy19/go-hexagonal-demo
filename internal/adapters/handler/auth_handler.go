@@ -3,7 +3,6 @@ package handler
 import (
 	"auth/hexagonal/internal/core/domain"
 	"auth/hexagonal/internal/core/services"
-	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -18,7 +17,6 @@ func NewAuthHandler(AuthService services.AuthService) *AuthHandler {
 
 func (h *AuthHandler) SignUp(c *fiber.Ctx) error {
 	var user domain.User
-	fmt.Println(user)
 	if err := c.BodyParser(&user); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid request"})
 	}
