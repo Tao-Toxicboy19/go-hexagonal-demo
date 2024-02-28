@@ -1,10 +1,10 @@
 package main
 
 import (
-	"auth/hexagonal/adapters/handler"
-	"auth/hexagonal/adapters/repositorys"
-	"auth/hexagonal/core/domain"
-	"auth/hexagonal/core/services"
+	"auth/hexagonal/internal/adapters/handler"
+	"auth/hexagonal/internal/adapters/repositorys"
+	"auth/hexagonal/internal/core/domain"
+	"auth/hexagonal/internal/core/services"
 
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/driver/postgres"

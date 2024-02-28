@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"auth/hexagonal/core/domain"
-	"auth/hexagonal/core/services"
+	"auth/hexagonal/internal/core/domain"
+	"auth/hexagonal/internal/core/services"
 
 	"github.com/gofiber/fiber/v2"
 )

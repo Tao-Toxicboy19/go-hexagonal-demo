@@ -1,8 +1,9 @@
 package services
 
 import (
-	"auth/hexagonal/core/domain"
-	"auth/hexagonal/core/ports"
+	"auth/hexagonal/internal/adapters/repositorys"
+	"auth/hexagonal/internal/core/domain"
+	"auth/hexagonal/internal/core/ports"
 )
 
 type AuthService struct {
@@ -17,6 +18,6 @@ func (a *AuthService) SignUp(user *domain.User) (*domain.User, error) {
 	return a.repo.SignUp(user)
 }
 
-func (a *AuthService) SignIn(username, password string) (*domain.User, error) {
+func (a *AuthService) SignIn(username, password string) (*repositorys.LoginResponse, error) {
 	return a.repo.SignIn(username, password)
 }

@@ -1,8 +1,8 @@
 package services
 
 import (
-	"auth/hexagonal/core/domain"
-	"auth/hexagonal/core/ports"
+	"auth/hexagonal/internal/core/domain"
+	"auth/hexagonal/internal/core/ports"
 )
 
 type OrderService struct {

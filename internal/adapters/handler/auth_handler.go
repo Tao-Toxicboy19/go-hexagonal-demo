@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"auth/hexagonal/core/domain"
-	"auth/hexagonal/core/services"
+	"auth/hexagonal/internal/core/domain"
+	"auth/hexagonal/internal/core/services"
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
@@ -35,5 +35,14 @@ func (h *AuthHandler) SignIn(c *fiber.Ctx) error {
 	if err := c.BodyParser(&user); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid request"})
 	}
-	return c.Status(fiber.StatusOK).JSON(user)
+
+	response, err := h.service.SignIn(user.Username, user.Password)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid request"})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"access_token":  response.AccessToken,
+		"refresh_token": response.RefreshToken,
+	})
 }

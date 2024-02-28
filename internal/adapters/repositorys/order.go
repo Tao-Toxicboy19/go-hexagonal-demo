@@ -1,7 +1,7 @@
 package repositorys
 
 import (
-	"auth/hexagonal/core/domain"
+	"auth/hexagonal/internal/core/domain"
 
 	"github.com/google/uuid"
 )
