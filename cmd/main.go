@@ -45,5 +45,8 @@ func InitRoute() {
 	orderHandler := handler.NewOrderHandler(*orderService)
 	v1.Post("/order", orderHandler.SaveOrder)
 	v1.Get("/order", orderHandler.ReadOrders)
+	v1.Get("/order/:id", orderHandler.ReadOrder)
+	v1.Delete("/order/:id", orderHandler.DeleteOrder)
+	v1.Put("/order/:id", orderHandler.UpdateOrder)
 	router.Listen(":8080")
 }

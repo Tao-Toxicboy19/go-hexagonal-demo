@@ -18,9 +18,15 @@ type AuthRepository interface {
 type OrderService interface {
 	SaveOrder(order *domain.Order) (*domain.Order, error)
 	ReadOrders() ([]*domain.Order, error)
+	ReadOrder(id string) (*domain.Order, error)
+	DeleteOrder(id string) error
+	UpdateOrder(id string, order *domain.Order) error
 }
 
 type OrderRepository interface {
 	SaveOrder(order *domain.Order) error
 	ReadOrders() ([]*domain.Order, error)
+	ReadOrder(id string) (*domain.Order, error)
+	DeleteOrder(id string) error
+	UpdateOrder(id string, order *domain.Order) error
 }

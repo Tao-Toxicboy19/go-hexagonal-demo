@@ -19,7 +19,8 @@ type LoginResponse struct {
 }
 
 func (a *DB) SignUp(user *domain.User) (*domain.User, error) {
-	req := a.db.First(&user, "username = ? ", user.Username)
+	req := a.db.Where("username = ? ", user.Username).First(&user)
+
 	if req.RowsAffected != 0 {
 		return nil, errors.New("user already exists")
 	}
@@ -75,7 +76,8 @@ func (a *DB) SignIn(username, password string) (*LoginResponse, error) {
 
 func (a *DB) findUsername(username string) (*domain.User, error) {
 	user := &domain.User{}
-	req := a.db.First(&user, "username = ? ", username)
+	req := a.db.Where("username = ? ", username).First(&user)
+	
 	if req.RowsAffected == 0 {
 		return nil, errors.New("user not found")
 	}
@@ -103,7 +105,7 @@ func (a *DB) generateAccessToken(userId, jwtSecret string) (string, error) {
 
 func (a *DB) generateRefreshToken(userId, jwtSecret string) (string, error) {
 	payload := jwt.RegisteredClaims{
-		Issuer:    "nayok-access",
+		Issuer:    "nayok-refresh",
 		Subject:   userId,
 		IssuedAt:  jwt.NewNumericDate(time.Now().UTC()),
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(7 * 24 * time.Hour).UTC()),

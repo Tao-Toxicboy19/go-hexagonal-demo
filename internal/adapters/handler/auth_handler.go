@@ -3,8 +3,14 @@ package handler
 import (
 	"auth/hexagonal/internal/core/domain"
 	"auth/hexagonal/internal/core/services"
+	"errors"
+	"os"
+	"strings"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/joho/godotenv"
 )
 
 type AuthHandler struct {
@@ -43,4 +49,52 @@ func (h *AuthHandler) SignIn(c *fiber.Ctx) error {
 		"access_token":  response.AccessToken,
 		"refresh_token": response.RefreshToken,
 	})
+}
+
+func ValidateToken(header string) (bool, error) {
+	err := godotenv.Load()
+	if err != nil {
+		panic(err)
+	}
+
+	jwtSecret := os.Getenv("JWT_SECRET")
+
+	if header == "" {
+		return false, errors.New("token not found")
+	}
+
+	// Check if header starts with "Bearer "
+	if !strings.HasPrefix(header, "Bearer ") {
+		return false, errors.New("invalid token format")
+	}
+
+	// Extract Bearer token
+	tokenHeader := header[7:]
+
+	token, err := jwt.ParseWithClaims(tokenHeader, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("unexpected signing method")
+		}
+		return []byte(jwtSecret), nil
+	})
+
+	if err != nil {
+		return false, errors.New("token invalid")
+	}
+
+	if !token.Valid {
+		return false, errors.New("token not valid")
+	}
+
+	payload, ok := token.Claims.(*jwt.RegisteredClaims)
+	if !ok || payload.ExpiresAt == nil || payload.ExpiresAt.Before(time.Now().UTC()) {
+		return false, errors.New("token has expired")
+	}
+
+	// Check if token is a refresh token
+	// if payload.Issuer == "nayok-refresh" {
+	// 	return false, errors.New("token is a refresh token, please use access token")
+	// }
+
+	return true, nil
 }
