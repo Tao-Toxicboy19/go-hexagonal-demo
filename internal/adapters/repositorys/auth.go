@@ -4,10 +4,12 @@ import (
 	"auth/hexagonal/internal/core/domain"
 	"errors"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"github.com/joho/godotenv"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -38,8 +40,12 @@ func (a *DB) SignUp(user *domain.User) (*domain.User, error) {
 }
 
 func (a *DB) SignIn(username, password string) (*LoginResponse, error) {
+	err := godotenv.Load()
+	if err != nil {
+		panic(err)
+	}
 	// Implement the SignIn logic here
-	var jwtSecret string = "hello world"
+	jwtSecret := os.Getenv("JWT_SECRET")
 	user, err := a.findUsername(username)
 	if err != nil {
 		return nil, err
@@ -85,7 +91,7 @@ func (a *DB) verifyPassword(hash, password string) error {
 
 func (a *DB) generateAccessToken(userId, jwtSecret string) (string, error) {
 	payload := jwt.RegisteredClaims{
-		Issuer:    "LordMoMA-access",
+		Issuer:    "nayok-access",
 		Subject:   userId,
 		IssuedAt:  jwt.NewNumericDate(time.Now().UTC()),
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(1 * time.Hour).UTC()),
@@ -97,7 +103,7 @@ func (a *DB) generateAccessToken(userId, jwtSecret string) (string, error) {
 
 func (a *DB) generateRefreshToken(userId, jwtSecret string) (string, error) {
 	payload := jwt.RegisteredClaims{
-		Issuer:    "LordMoMA-access",
+		Issuer:    "nayok-access",
 		Subject:   userId,
 		IssuedAt:  jwt.NewNumericDate(time.Now().UTC()),
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(7 * 24 * time.Hour).UTC()),
