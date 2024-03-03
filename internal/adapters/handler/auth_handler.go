@@ -4,6 +4,7 @@ import (
 	"auth/hexagonal/internal/core/domain"
 	"auth/hexagonal/internal/core/services"
 	"errors"
+	"fmt"
 	"os"
 	"strings"
 	"time"
@@ -24,11 +25,11 @@ func NewAuthHandler(AuthService services.AuthService) *AuthHandler {
 func (h *AuthHandler) SignUp(c *fiber.Ctx) error {
 	var user domain.User
 	if err := c.BodyParser(&user); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid request"})
+		return HandlerError(fiber.StatusBadRequest, err)
 	}
 
 	if _, err := h.service.SignUp(&user); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid request"})
+		return HandlerError(fiber.StatusBadRequest, err)
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(user)
@@ -37,12 +38,12 @@ func (h *AuthHandler) SignUp(c *fiber.Ctx) error {
 func (h *AuthHandler) SignIn(c *fiber.Ctx) error {
 	var user domain.User
 	if err := c.BodyParser(&user); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid request"})
+		return HandlerError(fiber.StatusBadRequest, err)
 	}
 
 	response, err := h.service.SignIn(user.Username, user.Password)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "invalid request"})
+		return HandlerError(fiber.StatusBadRequest, err)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -97,4 +98,16 @@ func ValidateToken(header string) (bool, error) {
 	// }
 
 	return true, nil
+}
+
+func Validate(c *fiber.Ctx) error {
+	valid, err := ValidateToken(c.Get("Authorization"))
+	if err != nil {
+		return err
+	}
+
+	if !valid {
+		return fmt.Errorf("unauthorized")
+	}
+	return nil
 }
