@@ -25,11 +25,11 @@ func NewAuthHandler(AuthService services.AuthService) *AuthHandler {
 func (h *AuthHandler) SignUp(c *fiber.Ctx) error {
 	var user domain.User
 	if err := c.BodyParser(&user); err != nil {
-		return HandlerError(fiber.StatusBadRequest, err)
+		return HandlerError(c, fiber.StatusBadRequest, err)
 	}
 
 	if _, err := h.service.SignUp(&user); err != nil {
-		return HandlerError(fiber.StatusBadRequest, err)
+		return HandlerError(c, fiber.StatusBadRequest, err)
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(user)
@@ -38,12 +38,12 @@ func (h *AuthHandler) SignUp(c *fiber.Ctx) error {
 func (h *AuthHandler) SignIn(c *fiber.Ctx) error {
 	var user domain.User
 	if err := c.BodyParser(&user); err != nil {
-		return HandlerError(fiber.StatusBadRequest, err)
+		return HandlerError(c, fiber.StatusBadRequest, err)
 	}
 
 	response, err := h.service.SignIn(user.Username, user.Password)
 	if err != nil {
-		return HandlerError(fiber.StatusBadRequest, err)
+		return HandlerError(c, fiber.StatusBadRequest, err)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
