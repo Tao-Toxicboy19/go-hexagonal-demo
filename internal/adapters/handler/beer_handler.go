@@ -113,9 +113,16 @@ func (h *BeerHandler) DeleteBeer(c *fiber.Ctx) error {
 }
 
 func (h *BeerHandler) UpdateBeer(c *fiber.Ctx) error {
-	var beer domain.Beer
-	id := c.Params("id")
 
+	// รับข้อมูลจาก FormData
+	id := c.Params("id")
+	form, err := c.MultipartForm()
+	if err != nil {
+		return HandlerError(c, fiber.StatusBadRequest, err)
+	}
+
+	// ดึงข้อมูล Beer จาก FormData
+	var beer domain.Beer
 	if err := c.BodyParser(&beer); err != nil {
 		return HandlerError(c, fiber.StatusBadRequest, err)
 	}
@@ -124,9 +131,58 @@ func (h *BeerHandler) UpdateBeer(c *fiber.Ctx) error {
 		return HandlerError(c, fiber.StatusBadRequest, err)
 	}
 
-	if err := h.service.UpdateBeer(id, &beer); err != nil {
-		return HandlerError(c, fiber.StatusBadRequest, err)
+	// รับไฟล์จาก FormData
+	files := form.File["files"]
+	for _, file := range files {
+		// อ่านไฟล์
+		src, err := file.Open()
+		if err != nil {
+			return HandlerError(c, fiber.StatusInternalServerError, err)
+		}
+		defer src.Close()
+
+		currentTime := time.Now()
+		newFilename := fmt.Sprintf("%d%02d%02d_%02d%02d%02d_%s",
+			currentTime.Year(), currentTime.Month(), currentTime.Day(),
+			currentTime.Hour(), currentTime.Minute(), currentTime.Second(),
+			file.Filename)
+
+		beer.Image = newFilename
+		beer.ID = id
+
+		if err := h.service.UpdateBeer(id, &beer); err != nil {
+			return HandlerError(c, fiber.StatusBadRequest, err)
+		}
+
+		dst, err := os.Create("./uploads/" + newFilename)
+		if err != nil {
+			return HandlerError(c, fiber.StatusInternalServerError, err)
+		}
+		defer dst.Close()
+
+		if _, err = io.Copy(dst, src); err != nil {
+			return HandlerError(c, fiber.StatusInternalServerError, err)
+		}
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(beer)
 }
+
+// func (h *BeerHandler) UpdateBeer(c *fiber.Ctx) error {
+// 	var beer domain.Beer
+// 	id := c.Params("id")
+
+// 	if err := c.BodyParser(&beer); err != nil {
+// 		return HandlerError(c, fiber.StatusBadRequest, err)
+// 	}
+
+// 	if err := Validate(c); err != nil {
+// 		return HandlerError(c, fiber.StatusBadRequest, err)
+// 	}
+
+// 	if err := h.service.UpdateBeer(id, &beer); err != nil {
+// 		return HandlerError(c, fiber.StatusBadRequest, err)
+// 	}
+
+// 	return c.Status(fiber.StatusCreated).JSON(beer)
+// }
