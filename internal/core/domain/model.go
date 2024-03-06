@@ -1,13 +1,21 @@
 package domain
 
 type User struct {
-	ID       string
-	Username string
+	ID       string `gorm:"primaryKey"`
+	Username string `gorm:"unique"`
 	Password string
+	ShopName string
+	Beers    []Beer
 }
 
-type Order struct {
-	ID        string
-	OrderName string
-	Price     float64
+type Beer struct {
+	ID          string `gorm:"primaryKey"`
+	BeerName    string
+	Description string
+	Alcohol     string
+	Price       float64
+	Stock       float64
+	Image       string
+	ShopName    string
+	UserId      string
 }

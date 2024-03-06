@@ -15,18 +15,18 @@ type AuthRepository interface {
 	SignIn(username, password string) (*repositorys.LoginResponse, error)
 }
 
-type OrderService interface {
-	SaveOrder(order *domain.Order) (*domain.Order, error)
-	ReadOrders() ([]*domain.Order, error)
-	ReadOrder(id string) (*domain.Order, error)
-	DeleteOrder(id string) error
-	UpdateOrder(id string, order *domain.Order) error
+type BeerService interface {
+	SaveBeer(order *domain.Beer) (*domain.Beer, error)
+	ReadBeers() ([]*domain.Beer, error)
+	ReadBeer(id string) (*domain.Beer, error)
+	DeleteBeer(id string) error
+	UpdateBeer(id string, order *domain.Beer) error
 }
 
-type OrderRepository interface {
-	SaveOrder(order *domain.Order) error
-	ReadOrders() ([]*domain.Order, error)
-	ReadOrder(id string) (*domain.Order, error)
-	DeleteOrder(id string) error
-	UpdateOrder(id string, order *domain.Order) error
+type BeerRepository interface {
+	SaveBeer(order *domain.Beer) error
+	ReadBeers() ([]*domain.Beer, error)
+	ReadBeer(id string) (*domain.Beer, error)
+	DeleteBeer(id string) error
+	UpdateBeer(id string, order *domain.Beer) error
 }
