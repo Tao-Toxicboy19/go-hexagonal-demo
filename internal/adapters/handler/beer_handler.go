@@ -25,7 +25,7 @@ func (h *BeerHandler) SaveBeer(c *fiber.Ctx) error {
 	if err != nil {
 		return HandlerError(c, fiber.StatusBadRequest, err)
 	}
-
+	fmt.Println(form)
 	// ดึงข้อมูล Beer จาก FormData
 	var beer domain.Beer
 	if err := c.BodyParser(&beer); err != nil {

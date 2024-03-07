@@ -46,6 +46,7 @@ func InitRoute() {
 	authHandler := handler.NewAuthHandler(*authService)
 	v1.Post("/signup", authHandler.SignUp)
 	v1.Post("/signin", authHandler.SignIn)
+	v1.Get("/auth/me", authHandler.DecodeToken)
 
 	beerHandler := handler.NewBeerHandler(*beerService)
 	v1.Post("/order", beerHandler.SaveBeer)

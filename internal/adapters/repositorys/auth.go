@@ -22,6 +22,7 @@ type CustomClaims struct {
 	jwt.RegisteredClaims
 	ShopName string `json:"shopName"`
 	Email    string `json:"email"`
+	Username string `json:"username"`
 }
 
 func (a *DB) SignUp(user *domain.User) (*domain.User, error) {
@@ -108,6 +109,7 @@ func (a *DB) generateAccessToken(user *domain.User, jwtSecret string) (string, e
 		},
 		ShopName: user.ShopName,
 		Email:    user.Email,
+		Username: user.Username,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -124,6 +126,7 @@ func (a *DB) generateRefreshToken(user *domain.User, jwtSecret string) (string, 
 		},
 		ShopName: user.ShopName,
 		Email:    user.Email,
+		Username: user.Username,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

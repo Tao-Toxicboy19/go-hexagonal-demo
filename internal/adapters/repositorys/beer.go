@@ -5,25 +5,25 @@ import (
 	"errors"
 	"os"
 
-	"github.com/google/uuid"
+	// "github.com/google/uuid"
 )
 
 func (b *DB) SaveBeer(beer *domain.Beer) error {
-	beer.ID = uuid.New().String()
-	if beer.UserId == "" {
-		return errors.New("UserId must be empty")
-	}
+	// beer.ID = uuid.New().String()
+	// if beer.UserId == "" {
+	// 	return errors.New("UserId must be empty")
+	// }
 
-	var user domain.User
-	if result := b.db.First(&user, "id = ?", beer.UserId); result.Error != nil {
-		return result.Error
-	}
+	// var user domain.User
+	// if result := b.db.First(&user, "id = ?", beer.UserId); result.Error != nil {
+	// 	return result.Error
+	// }
 
-	beer.ShopName = user.ShopName
+	// beer.ShopName = user.ShopName
 
-	if result := b.db.Create(&beer); result.Error != nil {
-		return result.Error
-	}
+	// if result := b.db.Create(&beer); result.Error != nil {
+	// 	return result.Error
+	// }
 
 	return nil
 }
