@@ -18,6 +18,12 @@ type LoginResponse struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
+type CustomClaims struct {
+	jwt.RegisteredClaims
+	ShopName string `json:"shopName"`
+	Email    string `json:"email"`
+}
+
 func (a *DB) SignUp(user *domain.User) (*domain.User, error) {
 	req := a.db.Where("username = ? ", user.Username).First(&user)
 
@@ -58,12 +64,12 @@ func (a *DB) SignIn(username, password string) (*LoginResponse, error) {
 		return nil, err
 	}
 
-	accessToken, err := a.generateAccessToken(user.ID, jwtSecret)
+	accessToken, err := a.generateAccessToken(user, jwtSecret)
 	if err != nil {
 		return nil, err
 	}
 
-	refreshToken, err := a.generateRefreshToken(user.ID, jwtSecret)
+	refreshToken, err := a.generateRefreshToken(user, jwtSecret)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +83,7 @@ func (a *DB) SignIn(username, password string) (*LoginResponse, error) {
 func (a *DB) findUsername(username string) (*domain.User, error) {
 	user := &domain.User{}
 	req := a.db.Where("username = ? ", username).First(&user)
-	
+
 	if req.RowsAffected == 0 {
 		return nil, errors.New("user not found")
 	}
@@ -92,25 +98,34 @@ func (a *DB) verifyPassword(hash, password string) error {
 	return nil
 }
 
-func (a *DB) generateAccessToken(userId, jwtSecret string) (string, error) {
-	payload := jwt.RegisteredClaims{
-		Issuer:    "nayok-access",
-		Subject:   userId,
-		IssuedAt:  jwt.NewNumericDate(time.Now().UTC()),
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(1 * time.Hour).UTC()),
+func (a *DB) generateAccessToken(user *domain.User, jwtSecret string) (string, error) {
+	claims := CustomClaims{
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    "nayok-access",
+			Subject:   user.ID,
+			IssuedAt:  jwt.NewNumericDate(time.Now().UTC()),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(1 * time.Hour).UTC()),
+		},
+		ShopName: user.ShopName,
+		Email:    user.Email,
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(jwtSecret))
 }
 
-func (a *DB) generateRefreshToken(userId, jwtSecret string) (string, error) {
-	payload := jwt.RegisteredClaims{
-		Issuer:    "nayok-refresh",
-		Subject:   userId,
-		IssuedAt:  jwt.NewNumericDate(time.Now().UTC()),
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(7 * 24 * time.Hour).UTC()),
+func (a *DB) generateRefreshToken(user *domain.User, jwtSecret string) (string, error) {
+	claims := CustomClaims{
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    "nayok-refresh",
+			Subject:   user.ID,
+			IssuedAt:  jwt.NewNumericDate(time.Now().UTC()),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(7 * 24 * time.Hour).UTC()),
+		},
+		ShopName: user.ShopName,
+		Email:    user.Email,
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(jwtSecret))
 }

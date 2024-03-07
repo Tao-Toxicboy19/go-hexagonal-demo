@@ -52,6 +52,11 @@ func (h *AuthHandler) SignIn(c *fiber.Ctx) error {
 	})
 }
 
+func (h *AuthHandler) DecodeToken(c *fiber.Ctx) error {
+
+	return c.SendString("Token decoded successfully")
+}
+
 func ValidateToken(header string) (bool, error) {
 	err := godotenv.Load()
 	if err != nil {

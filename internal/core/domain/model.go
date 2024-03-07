@@ -3,6 +3,7 @@ package domain
 type User struct {
 	ID       string `gorm:"primaryKey"`
 	Username string `gorm:"unique"`
+	Email    string `gorm:"unique"`
 	Password string
 	ShopName string
 	Beers    []Beer
