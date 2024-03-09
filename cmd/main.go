@@ -15,6 +15,7 @@ import (
 var (
 	authService *services.AuthService
 	beerService *services.BeerService
+	cartService *services.CartService
 )
 
 func main() {
@@ -25,12 +26,13 @@ func main() {
 		panic("failed to connect database")
 	}
 
-	db.AutoMigrate(&domain.User{}, &domain.Beer{})
+	db.AutoMigrate(&domain.User{}, &domain.Beer{}, &domain.Cart{})
 
 	store := repositorys.NewDB(db)
 
 	authService = services.NewAuthService(store)
 	beerService = services.NewBeerService(store)
+	cartService = services.NewCartService(store)
 
 	InitRoute()
 }
@@ -54,6 +56,12 @@ func InitRoute() {
 	v1.Get("/order/:id", beerHandler.ReadBeer)
 	v1.Delete("/order/:id", beerHandler.DeleteBeer)
 	v1.Put("/order/:id", beerHandler.UpdateBeer)
+	v1.Get("/user/orders/:id", beerHandler.ReadByUserId)
+
+	cartHandler := handler.NewCartHandler(*cartService)
+	v1.Post("/cart", cartHandler.SaveCart)
+	v1.Get("/user/cart/:id", cartHandler.ReadCarts)
+	v1.Delete("/cart/:id", cartHandler.DeleteCart)
 
 	router.Listen(":8080")
 }

@@ -17,7 +17,7 @@ type AuthRepository interface {
 
 type BeerService interface {
 	SaveBeer(order *domain.Beer) (*domain.Beer, error)
-	ReadBeers() ([]*domain.Beer, error)
+	ReadByUserId(id string) ([]*domain.Beer, error)
 	ReadBeer(id string) (*domain.Beer, error)
 	DeleteBeer(id string) error
 	UpdateBeer(id string, order *domain.Beer) error
@@ -25,8 +25,21 @@ type BeerService interface {
 
 type BeerRepository interface {
 	SaveBeer(order *domain.Beer) error
+	ReadByUserId(id string) ([]*domain.Beer, error)
 	ReadBeers() ([]*domain.Beer, error)
 	ReadBeer(id string) (*domain.Beer, error)
 	DeleteBeer(id string) error
 	UpdateBeer(id string, order *domain.Beer) error
+}
+
+type CartsService interface {
+	SaveCart(cart *domain.Cart) error
+	ReadCarts(id string) ([]*domain.Cart, error)
+	DeleteCart(id string) error
+}
+
+type CartsRepository interface {
+	SaveCart(cart *domain.Cart) error
+	ReadCarts(id string) ([]*domain.Cart, error)
+	DeleteCart(id string) error
 }

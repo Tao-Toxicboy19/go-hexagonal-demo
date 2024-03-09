@@ -7,6 +7,7 @@ type User struct {
 	Password string
 	ShopName string
 	Beers    []Beer
+	Carts    []Cart
 }
 
 type Beer struct {
@@ -19,4 +20,11 @@ type Beer struct {
 	Image       string
 	ShopName    string
 	UserId      string
+	Carts       []Cart
+}
+
+type Cart struct {
+	ID     string `gorm:"primaryKey"`
+	BeerId string
+	UserId string
 }

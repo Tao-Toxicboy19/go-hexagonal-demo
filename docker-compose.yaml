@@ -9,3 +9,5 @@ services:
       POSTGRES_USER: postgres
     ports:
       - '3500:5432'
+    volumes:
+      - D:\golang\hexagonal-auth\db:/var/lib/postgresql/data

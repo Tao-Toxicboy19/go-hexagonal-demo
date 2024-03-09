@@ -21,6 +21,10 @@ func (o *BeerService) ReadBeers() ([]*domain.Beer, error) {
 	return o.repo.ReadBeers()
 }
 
+func (o *BeerService) ReadByUserId(id string) ([]*domain.Beer, error) {
+	return o.repo.ReadByUserId(id)
+}
+
 func (o *BeerService) ReadBeer(id string) (*domain.Beer, error) {
 	return o.repo.ReadBeer(id)
 }
